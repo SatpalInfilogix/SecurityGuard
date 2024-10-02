@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
-const HomeScreen: React.FC = () => {
+const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [isPunchedIn, setIsPunchedIn] = useState(false);
 
   const handleTogglePunch = () => {
@@ -46,6 +46,33 @@ const HomeScreen: React.FC = () => {
           </Button>
         )}
       </View>
+
+      <View style={styles.linksContainer}>
+        <Button
+          mode="text"
+          onPress={() => navigation.navigate('FAQ')}
+          style={styles.linkButton}
+          labelStyle={{ color: theme.colors.primary }}
+        >
+          FAQ
+        </Button>
+        <Button
+          mode="text"
+          onPress={() => navigation.navigate('HelpAndComplaints')}
+          style={styles.linkButton}
+          labelStyle={{ color: theme.colors.primary }}
+        >
+          Help & Complaints
+        </Button>
+        <Button
+          mode="text"
+          onPress={() => navigation.navigate('EmergencyContact')}
+          style={styles.linkButton}
+          labelStyle={{ color: theme.colors.primary }}
+        >
+          Emergency Contact
+        </Button>
+      </View>
     </View>
   );
 };
@@ -67,6 +94,14 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 8,
+  },
+  linksContainer: {
+    marginTop: 20,
+    width: '100%',
+    alignItems: 'center',
+  },
+  linkButton: {
+    marginVertical: 5,
   },
 });
 

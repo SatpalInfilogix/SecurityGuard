@@ -14,6 +14,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import theme from './theme';
+import FAQScreen from './screens/FAQScreen';
+import HelpAndComplaintsScreen from './screens/HelpAndComplaintsScreen';
+import EmergencyContactScreen from './screens/EmergencyContactScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -101,6 +104,9 @@ const App: React.FC = () => {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="FAQ" component={FAQScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="HelpAndComplaints" component={HelpAndComplaintsScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="EmergencyContact" component={EmergencyContactScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
