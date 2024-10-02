@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const SettingsScreen = () => {
+const AttendanceScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>Settings Screen</Text>
+      <Text>Attendance Screen</Text>
     </View>
   );
 };
@@ -17,4 +17,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingsScreen;
+export default AttendanceScreen;
