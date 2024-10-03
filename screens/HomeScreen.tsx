@@ -1,19 +1,10 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, StyleSheet} from 'react-native';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import theme from '../theme';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import AntIcon from 'react-native-vector-icons/AntDesign';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import PunchButton from './components/PunchButton';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [isPunchedIn, setIsPunchedIn] = useState(false);
-
-  const handleTogglePunch = () => {
-    setIsPunchedIn((prevState) => !prevState);
-    console.log(isPunchedIn ? "Punched Out!" : "Punched In!");
-  };
-
   return (
     <View style={styles.container}>
       <Card>
@@ -24,27 +15,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </Card>
 
       <View style={styles.buttonContainer}>
-        {!isPunchedIn ? (
-          <Button
-            mode="contained"
-            onPress={handleTogglePunch}
-            style={[styles.button, { backgroundColor: theme.colors.secondary }]}
-            labelStyle={{ color: theme.colors.white }}
-            icon={() => <SimpleLineIcons name="energy" size={20} color={theme.colors.white} />}
-          >
-            Punch In
-          </Button>
-        ) : (
-          <Button
-            mode="outlined"
-            onPress={handleTogglePunch}
-            style={[styles.button, { backgroundColor: theme.colors.secondary }]}
-            labelStyle={{ color: theme.colors.white }}
-            icon={() => <SimpleLineIcons name="clock" size={20} color={theme.colors.white} />}
-          >
-            Punch Out
-          </Button>
-        )}
+        <PunchButton />
       </View>
 
       <View style={styles.linksContainer}>
