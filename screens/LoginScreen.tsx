@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { TextInput, Button, Text, IconButton, Provider as PaperProvider } from 'react-native-paper';
+import { TextInput, Button, Text, Provider as PaperProvider } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
 import theme from '../theme';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Make sure to import the icon library you need
