@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, StyleSheet, PermissionsAndroid, Platform, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import theme from '../../theme';
 import Geolocation from '@react-native-community/geolocation';
+import { launchCamera, ImagePickerResponse, CameraOptions } from 'react-native-image-picker';
 
 const PunchButton: React.FC = () => {
     const [isPunchedIn, setIsPunchedIn] = useState(false);
+
     const requestLocationPermission = async () => {
         if (Platform.OS === 'android') {
             const granted = await PermissionsAndroid.request(
@@ -25,20 +27,65 @@ const PunchButton: React.FC = () => {
         }
     };
 
+    const requestCameraPermission = async (): Promise<boolean> => {
+        if (Platform.OS === 'android') {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+                {
+                    title: "Camera Permission",
+                    message: "This app needs access to your camera.",
+                    buttonNeutral: "Ask Me Later",
+                    buttonNegative: "Cancel",
+                    buttonPositive: "OK",
+                }
+            );
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } else {
+            // For iOS, you should ideally check using react-native-permissions,
+            // but for simplicity, we'll assume permission is granted.
+            return true;
+        }
+    };
+
     const handleTogglePunch = async () => {
-        const hasPermission = await requestLocationPermission();
-        if (!hasPermission) {
+        const hasLocationPermission = await requestLocationPermission();
+        if (!hasLocationPermission) {
             Alert.alert("Permission Denied", "Location permission is required to punch in.");
             return;
         }
 
-        Geolocation.getCurrentPosition(info => console.log(info));
+        const hasCameraPermission = await requestCameraPermission();
+        if (!hasCameraPermission) {
+            Alert.alert("Camera Permission Denied", "Camera access is required to take a selfie.");
+            return;
+        }
 
-        setIsPunchedIn((prevState) => !prevState);
-        console.log(isPunchedIn ? "Punched Out!" : "Punched In!");
+        const cameraOptions: CameraOptions = {
+            mediaType: 'photo',
+            cameraType: 'front', // To capture a selfie
+            saveToPhotos: false,
+        };
+
+        launchCamera(cameraOptions, (response: ImagePickerResponse) => {
+            if (response.didCancel) {
+                console.log('User cancelled camera');
+            } else if (response.errorCode) {
+                Alert.alert("Camera Error", response.errorMessage);
+                return;
+            } else if (response.assets && response.assets.length > 0) {
+                console.log('assets', response.assets)
+                //setPhoto(response.assets[0].uri);
+
+                Geolocation.getCurrentPosition(info => console.log(info));
+                setIsPunchedIn((prevState) => !prevState);
+                console.log(isPunchedIn ? "Punched Out!" : "Punched In!");
+            }
+        });
     };
 
+
     return (<View style={styles.buttonContainer}>
+
         {!isPunchedIn ? (
             <Button
                 mode="contained"
@@ -74,6 +121,9 @@ const styles = StyleSheet.create({
     button: {
         flex: 1,
         marginHorizontal: 8,
+    },
+    preview: {
+        flex: 1,
     },
 });
 

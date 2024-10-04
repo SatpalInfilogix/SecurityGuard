@@ -36,6 +36,8 @@
 	<string>This app needs access to your location.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to your location.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Need camera access to take photos.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UILaunchStoryboardName</key>
