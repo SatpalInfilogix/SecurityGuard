@@ -1,72 +1,135 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { TextInput, Button, Text, Provider as PaperProvider } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
 import theme from '../theme';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Make sure to import the icon library you need
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ErrorMessage from './components/ErrorMessage';
+import axios from 'axios';
+import config from '../config';
 
 type Props = {
   navigation: StackNavigationProp<any>;
 };
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [username, setUsername] = useState<string>('');
+  const [phoneNumber, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<{ phoneNumber?: string; password?: string }>({});
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(prevState => !prevState);
   };
 
-  const handleLogin = () => {
-    console.log('Username:', username);
-    console.log('Password:', password);
-    navigation.navigate('HomeTabs');
+  const validate = () => {
+    const newErrors: { phoneNumber?: string; password?: string } = {};
+    if (!phoneNumber) newErrors.phoneNumber = 'Phone number is required.';
+    if (!password) newErrors.password = 'Password is required.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleLogin = async () => {
+    if (validate()) {
+      try {
+        setErrorMessage('');
+        setIsSubmitting(true);
+
+        const response = await axios.post(`${config.apiEndpoint}login`,
+          new URLSearchParams({
+            phone_number: phoneNumber,
+            password: password,
+          }).toString(), {
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          }
+        });
+
+        setIsSubmitting(false);
+
+        let { data } = response.data;
+        await AsyncStorage.setItem('@userToken', data.token);
+        navigation.navigate('HomeTabs');
+      } catch (error: any) {
+        setIsSubmitting(false);
+
+        if (axios.isAxiosError(error) && error.response) {
+          setErrorMessage(error.response.data.message || 'Something went wrong');
+        } else {
+          Alert.alert('Error', 'There was an error connecting to the server');
+        }
+      }
+    }
   };
 
   return (
     <PaperProvider>
       <View style={styles.container}>
         <Text style={styles.title}>Login</Text>
-        <TextInput
-          label="Username"
-          value={username}
-          onChangeText={setUsername}
-          style={styles.input}
-          mode="outlined"
-          theme={{
-            colors: {
-              primary: theme.colors.primary
-            },
-          }}
+
+        <ErrorMessage
+          visible={errorMessage ? true : false}
+          message={errorMessage}
         />
-        <TextInput
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
-          style={styles.input}
-          mode="outlined"
-          theme={{
-            colors: {
-              primary: theme.colors.primary
-            },
-          }}
-          right={
-            <TextInput.Icon
+
+        <View style={styles.input}>
+          <TextInput
+            label="Phone number"
+            value={phoneNumber}
+            onChangeText={setUsername}
+            style={styles.input}
+            mode="outlined"
+            theme={{
+              colors: {
+                primary: theme.colors.primary
+              },
+            }}
+            keyboardType="numeric"
+            error={!!errors.phoneNumber}
+          />
+          {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber}</Text>}
+        </View>
+
+        <View style={styles.input}>
+          <TextInput
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            mode="outlined"
+            theme={{
+              colors: {
+                primary: theme.colors.primary
+              },
+            }}
+            right={
+              <TextInput.Icon
                 icon={() => (
-                <Icon 
-                    name={showPassword ? 'visibility-off' : 'visibility'} 
-                    size={24} 
-                    onPress={handleTogglePasswordVisibility} 
-                />
+                  <Icon
+                    name={showPassword ? 'visibility-off' : 'visibility'}
+                    size={24}
+                    onPress={handleTogglePasswordVisibility}
+                  />
                 )}
                 onPress={handleTogglePasswordVisibility}
-            />
-          }
-        />
-        <Button mode="contained" onPress={handleLogin} style={[styles.button, { backgroundColor: theme.colors.secondary }]}>
-          Login
+              />
+            }
+            error={!!errors.password}
+          />
+          {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+        </View>
+
+        <Button 
+          mode="contained" 
+          onPress={handleLogin} 
+          disabled={isSubmitting} 
+          style={[styles.button, { backgroundColor: theme.colors.secondary }]}>
+          {isSubmitting ? 'Logging in...' : 'Login'}
         </Button>
       </View>
     </PaperProvider>
@@ -78,19 +141,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#fff', // or theme.colors.background if preferred
+    backgroundColor: theme.colors.background,
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
     textAlign: 'center',
-    color: '#000', // or theme.colors.primary if preferred
+    color: theme.colors.text,
   },
   input: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   button: {
     marginTop: 10,
+  },
+  errorText: {
+    color: theme.colors.error,
+    marginBottom: 20,
+    textAlign: 'left',
   },
 });
 
