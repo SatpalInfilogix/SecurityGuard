@@ -1,16 +1,20 @@
 import React from 'react';
-import { View, StyleSheet} from 'react-native';
-import { Button, Card, Title, Paragraph } from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { Button, Card, Title, Paragraph, Text } from 'react-native-paper';
 import theme from '../theme';
 import PunchButton from './components/PunchButton';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Card>
         <Card.Content>
-          <Title>Today's Location</Title>
-          <Paragraph>Security Guard is currently at: {`Location Name/Address`}</Paragraph>
+          <View style={[styles.locationContainer]}>
+            <FeatherIcon name="map-pin" size={18} color={theme.colors.primary} style={styles.locationIcon} />
+            <Title>Today's Location</Title>
+          </View>
+          <Paragraph>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{`National Water Comission`}</Text></Paragraph>
         </Card.Content>
       </Card>
 
@@ -19,6 +23,14 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>
 
       <View style={styles.linksContainer}>
+        <Button
+          mode="outlined"
+          onPress={() => navigation.navigate('FAQ')}
+          style={styles.linkButton}
+          labelStyle={{ color: theme.colors.primary }}
+        >
+          Apply Leave
+        </Button>
         <Button
           mode="text"
           onPress={() => navigation.navigate('FAQ')}
@@ -54,6 +66,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  locationIcon: {
+    paddingRight: 6,
+    fontWeight: '900'
   },
   buttonContainer: {
     flexDirection: 'row',

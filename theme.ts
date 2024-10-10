@@ -7,6 +7,8 @@ const theme = {
     white: '#fff',
     text: '#000000',
     error: '#BA181B',
+    warning: '#F3C623',
+    success: '#72BF78',
     border: '#e0e0e0',
   },
 };

@@ -50,8 +50,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           }
         });
 
-        setIsSubmitting(false);
-
         let { data } = response.data;
         await AsyncStorage.setItem('@userToken', data.token);
         navigation.navigate('HomeTabs');
